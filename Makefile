@@ -6,7 +6,7 @@
 #    By: jbernabe <jbernabe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/02/08 03:41:04 by dfrayssi          #+#    #+#              #
-#    Updated: 2014/05/17 03:53:53 by jbernabe         ###   ########.fr        #
+#    Updated: 2014/05/17 23:36:53 by jbernabe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ all:
 		make -C server
 
 clean:
-		#make clean -C libft
-	#	make clean -C client
+		make clean -C libft
+		make clean -C client
 		make clean -C server
 
 

@@ -6,59 +6,56 @@
 /*   By: jbernabe <jbernabe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/02/07 20:45:35 by jbernabe          #+#    #+#             */
-/*   Updated: 2014/02/08 21:56:39 by jbernabe         ###   ########.fr       */
+/*   Updated: 2014/05/17 23:34:36 by jbernabe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "client.h"
+#include "libft.h"
 
-static void	get_string(char *str, int pid)
+void					ft_use_client(char *s, char *s2)
 {
-	size_t	i;
-	size_t	len;
-	int		max_value;
+	printf("Usage: client  %s <addr> %s <port>\n", s, s2);
+	exit(0);
+}
 
-	i = 0;
-	max_value = 128;
-	len = ft_strlen(str);
-	str[len] = '\n';
-	while((i <= len))
-	{
-		while (max_value > 0)
+int						creat_client(char *n_addr, int port)
+{
+	int					sockt;
+	struct protoent		*proto;
+	struct sockaddr_in	direct;
+
+
+	if (!(proto = getprotobyname("tcp")))
+		return (-1);
+	sockt = socket(AF_INET, SOCK_STREAM, proto->p_proto);
+	direct.sin_family = AF_INET;
+	direct.sin_port = htons(port);
+	direct.sin_addr.s_addr = inet_addr(n_addr);
+	if (connect(sockt, (const struct sockaddr *)&direct, sizeof(direct)) == -1)
+		return (-1);
+	return (sockt);
+}
+
+int						main(int ac, char **av)
+{
+	int					sockt;
+	char				buf[1024];
+	// int					r;
+
+	if (ac != 3)
+		ft_use_client(av[0], av[1]);
+	if (av[1])
+		sockt = creat_client(av[1], ft_atoi(av[2]));
+	ft_memset(buf, 0, sizeof(buf));
+	// while ((r = read(sockt, buf, sizeof(buf)) > 0))
+	// {
+		if (send(sockt, buf, sizeof(buf), MSG_OOB) == -1)
 		{
-			if (str[i] & max_value)
-			{
-				kill(pid, SIGUSR1); 
-			}
-			else 
-			{
-				kill(pid, SIGUSR2); 
-			}
-			usleep(1000);
-			max_value = max_value / 2;
+			ft_putendl("Error to send");
+			return (-1);
 		}
-		max_value = 128;
-		i++;
-	}
-}
-
-int		get_pid(char *s)
-{
-	int	pid;
-
-	if ((pid = ft_atoi(s)) == 0)
-			return (0);
-	return (pid);
-}
-
-int		main(int ac, char **av)
-{
-	if (ac == 3)
-	{
-		get_string(av[2], get_pid(av[1]));
-	}
-	else
-		ft_putstr("\033[35m Too few arguments\033[0m");
+	// }
+	close(sockt);
 	return (0);
 }
